@@ -1,0 +1,1 @@
+# Requirement:     Python (2.7), Django, Python-social-auth
