@@ -11,7 +11,8 @@ def home(request):
     if request.user.is_authenticated():
         return redirect('done')
     return render_to_response('home.html', {
-        'plus_id': getattr(settings, 'SOCIAL_AUTH_GOOGLE_PLUS_KEY', None)
+        'plus_id': getattr(settings, 'SOCIAL_AUTH_GOOGLE_PLUS_KEY', None),
+        'test': 'test'
     }, RequestContext(request))
 
 
