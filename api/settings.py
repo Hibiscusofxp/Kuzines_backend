@@ -1,5 +1,6 @@
 import sys
-from os.path import abspath, dirname, join
+import imp
+from os.path import abspath, dirname, join, isfile
 
 
 sys.path.insert(0, '../..')
@@ -220,3 +221,7 @@ except ImportError:
 SOCIAL_AUTH_FACEBOOK_KEY ='587784734610029'
 SOCIAL_AUTH_FACEBOOK_SECRET ='f1b4c38284384384657cc65c95b82d74'
 # SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+
+if isfile(join(ROOT_PATH, "settings_production.py")):
+    PRODUCTION_SETTINGS = imp.load_source("settings_production", join(ROOT_PATH, "settings_production.py"))
+    DATABASES = PRODUCTION_SETTINGS.DATABASES
