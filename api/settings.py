@@ -182,8 +182,9 @@ AUTHENTICATION_BACKENDS = (
 )
 
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/done/'
+LOGIN_REDIRECT_URL = '/app/done/'
 # LOGIN_REDIRECT_URL = '/mylogin/'
+
 URL_PATH = ''
 SOCIAL_AUTH_STRATEGY = 'social.strategies.django_strategy.DjangoStrategy'
 SOCIAL_AUTH_STORAGE = 'social.apps.django_app.default.models.DjangoStorage'
@@ -225,3 +226,5 @@ SOCIAL_AUTH_FACEBOOK_SECRET ='f1b4c38284384384657cc65c95b82d74'
 if isfile(join(ROOT_PATH, "settings_production.py")):
     PRODUCTION_SETTINGS = imp.load_source("settings_production", join(ROOT_PATH, "settings_production.py"))
     DATABASES = PRODUCTION_SETTINGS.DATABASES
+
+MY_GOOGLE_API_KEY = 'AIzaSyB68eUZvmlXHPJ4zHBtCnqhAV87_z3CT30'

@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 
 from social.backends.google import GooglePlusAuth
 
-
 def home(request):
     """Home view, displays login mechanism"""
     if request.user.is_authenticated():
@@ -13,7 +12,6 @@ def home(request):
     return render_to_response('home.html', {
         'plus_id': getattr(settings, 'SOCIAL_AUTH_GOOGLE_PLUS_KEY', None)
     }, RequestContext(request))
-
 
 @login_required
 def done(request):
