@@ -4,6 +4,8 @@ from django.contrib import admin
 from django.contrib.auth.views import login, logout
 # from api.app.views import mylogin, mylogout
 
+import api.apiv1.urls
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -19,6 +21,7 @@ urlpatterns = patterns('',
     # url(r'^logout/$', 'api.app.views.logout', name='logout'),
     url(r'^accounts/logout/$', logout, name = 'logout'),
     url(r'^accounts/login/$', login, name = 'login'),
+    url(r'^api/v1/', include(api.apiv1.urls)),
     # url(r'^mylogin/$', mylogin, name = 'login'),
     # url(r'^mylogout/$', mylogout, name='logout'),
 )
