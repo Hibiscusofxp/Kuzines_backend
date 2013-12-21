@@ -3,6 +3,8 @@ from django.shortcuts import render_to_response, redirect
 from django.http import HttpResponse
 from django.conf import settings
 
+from .decorators import kuzines_api
+
 
 
 def index(request):
@@ -17,12 +19,13 @@ import urllib, urllib2
 from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
+@kuzines_api
 def getListFromGoogleMap(request):
     if request.method != 'POST':
         return FailResWithMsg("POST method expected")
-    if request.POST.has_key('latitude') and request.POST.has_key('longitude'):
-        latitude = request.POST['latitude']
-        longitude = request.POST['longitude']
+    if request.DATA.has_key('latitude') and request.DATA.has_key('longitude'):
+        latitude = request.DATA['latitude']
+        longitude = request.DATA['longitude']
     else:
         return FailResWithMsg("latitude or longitude not found")
 
@@ -58,3 +61,4 @@ def FailResWithMsg(message):
     res = RFail()
     res.message = message
     return HttpResponse(json.dumps(res), content_type = "application/json")
+
