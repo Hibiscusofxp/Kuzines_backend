@@ -131,6 +131,46 @@ def log_out(request):
     return SuccessRes("You are successfully logged in")
 
 
+from .models import Posts
+
+@require_POST
+@csrf_exempt
+@kuzines_api
+def newpost(request):
+    """
+    required paras:
+    string username
+    string content
+    *location location
+    """
+    if request.DATA.has_key('username'):
+        username = request.DATA['username']
+    else:
+        return FailResWithMsg("username not found")
+    if request.DATA.has_key('content'):
+        content = request.DATA['content']
+    else:
+        return FailResWithMsg("content not found")
+    # location not done
+
+    try:
+        user = User.objects.get(username = username)
+    except User.DoesNotExist:
+        return FailResWithMsg("User not exists")
+
+    newPost = Posts(content = content, user = user)
+    newPost.save()
+    return SuccessRes("New feed posted on " + user)
+
+
+
+
+
+
+
+
+
+
 def SuccessRes(data):
     res = RSuccess()
     res.data = data
