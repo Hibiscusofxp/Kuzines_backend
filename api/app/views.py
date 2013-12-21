@@ -79,11 +79,11 @@ def mylogin(request):
         date_login_expiring = datetime.datetime.now() + datetime.timedelta(weeks = 2)
         res.data['username'] = username
         res.data['data_login_expiring'] = FormattedTime(date_login_expiring)
-        return redirect('done', {
-            'json': json.dumps(res),
-            'user': user,
-            })
-        # return HttpResponse(json.dumps(res), content_type = "application/json")
+        # return redirect('done', {
+        #     'json': json.dumps(res),
+        #     'user': user,
+        #     })
+        return HttpResponse(json.dumps(res), content_type = "application/json")
     else:
         return FailResWithMsg("username and password dismatch")
 
@@ -101,3 +101,4 @@ def FailResWithMsg(message):
     res.message = message
     return HttpResponse(json.dumps(res), content_type = "application/json")
 ########################################################
+

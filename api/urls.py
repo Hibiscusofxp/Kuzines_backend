@@ -1,7 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-
 from api.app import views
 
 import api.apiv1.urls as api_urls

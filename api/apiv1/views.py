@@ -6,9 +6,8 @@ from django.conf import settings
 from .decorators import kuzines_api
 
 
-
 def index(request):
-	return HttpResponse("Hi")
+    return HttpResponse("Hi")
 
 
 from jsend import RSuccess, RFail, RError
@@ -40,18 +39,23 @@ def getListFromGoogleMap(request):
     }
     paras = urllib.urlencode(plain_paras)
     reque = urllib2.Request('https://maps.googleapis.com/maps/api/place/nearbysearch/json?' + paras)
-    res = urllib2.urlopen(reque)
-    r = res.read()
-    response = json.loads(r)
+    resurl = urllib2.urlopen(reque)
+    resfile = resurl.read()
+    resjson = json.loads(resfile)
 
     # names = [entry["name"] if "name" in entry else None for entry in jdata["results"]]
-    names = []
-    for entry in response["results"]:
+    entries = []
+    for entry in resjson["results"]:
+        tmp = {}
         if entry.has_key("name"):
-            names.append(entry["name"])
+            tmp["name"] = entry["name"]
+        if entry.has_key("vicinity"):
+            tmp["address"] = entry["vicinity"]
+        if tmp:
+            entries.append(tmp)
     jdata = {}
-    jdata["results"] = names
-    jdata["status"] = response["status"]
+    jdata["results"] = entries
+    jdata["status"] = resjson["status"]
     return HttpResponse(json.dumps(jdata), content_type = "application/json")
 
 
@@ -61,4 +65,3 @@ def FailResWithMsg(message):
     res = RFail()
     res.message = message
     return HttpResponse(json.dumps(res), content_type = "application/json")
-
