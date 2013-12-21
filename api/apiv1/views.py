@@ -111,14 +111,13 @@ def log_in(request):
         return FailResWithMsg("username and password dismatch")
 
 
-@require_POST
 @csrf_exempt
 @kuzines_api
 def is_login(request):
     if request.user.is_authenticated():
-        SuccessRes("You are currently logged in")
+        return SuccessRes("You are currently logged in")
     else:
-        FailResWithMsg("You are not logged in")
+        return FailResWithMsg("You are not logged in")
 
 
 from django.contrib.auth.decorators import login_required
