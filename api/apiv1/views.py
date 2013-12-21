@@ -111,7 +111,6 @@ def log_in(request):
         return FailResWithMsg("username and password dismatch")
 
 
-@require_POST
 @csrf_exempt
 @kuzines_api
 def is_login(request):
