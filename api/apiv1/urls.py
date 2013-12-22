@@ -8,4 +8,6 @@ urlpatterns = patterns('',
     url(r'^login$', views.log_in, name = 'login'),
     url(r'^islogin$', views.is_login, name = 'is_login'),
     url(r'^logout$', views.log_out, name = 'log_out'),
+    url(r'^newpost$', views.newpost, name = 'newpost'),
+    url(r'^getposts$', views.getPosts, name = 'getposts'),
 )

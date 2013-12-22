@@ -131,6 +131,7 @@ def log_out(request):
 
 
 from .models import Posts
+import datetime
 
 @require_POST
 @csrf_exempt
@@ -142,6 +143,7 @@ def newpost(request):
     string content
     *location location
     """
+    # one problem remain: what content includes quotation marks
     if request.DATA.has_key('username'):
         username = request.DATA['username']
     else:
@@ -158,13 +160,36 @@ def newpost(request):
         return FailResWithMsg("User not exists")
 
     newPost = Posts(content = content, user = user)
+    newPost.time = datetime.datetime.utcnow()
     newPost.save()
-    return SuccessRes("New feed posted on " + user)
+    return SuccessRes("New feed posted on " + username)
 
 
+@require_POST
+@csrf_exempt
+@kuzines_api
+def getPosts(request):
+    """
+    required paras:
+    string username
+    """
+    # one problem remain: what content includes quotation marks
+    # location not done
+    if request.DATA.has_key('username'):
+        username = request.DATA['username']
+    else:
+        return FailResWithMsg("username not found")
 
+    try:
+        user = User.objects.get(username = username)
+    except User.DoesNotExist:
+        return FailResWithMsg("User not exists")
 
-
+    allposts = user.posts_set.all()
+    jdata = []
+    for entry in allposts:
+        jdata.append(entry.getDict())
+    return SuccessRes(jdata)
 
 
 

@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User as Users
 # Create your models here.
 
 class Locations(models.Model):
@@ -11,27 +11,37 @@ class Locations(models.Model):
     class Meta:
         db_table = 'locations'
 
-class Users(models.Model):
-    uid = models.IntegerField(primary_key=True)
-    firstname = models.CharField(max_length=100L)
-    lastname = models.CharField(max_length=100L, blank=True)
-    username = models.CharField(max_length=100L, unique=True)
-    password = models.CharField(max_length=256L)
-    birthday = models.DateField(null=True, blank=True)
-    location = models.ForeignKey(Locations, null=True, db_column='location', blank=True)
-    class Meta:
-        db_table = 'users'
+# class Users(models.Model):
+#     uid = models.IntegerField(primary_key=True)
+#     firstname = models.CharField(max_length=100L)
+#     lastname = models.CharField(max_length=100L, blank=True)
+#     username = models.CharField(max_length=100L, unique=True)
+#     password = models.CharField(max_length=256L)
+#     birthday = models.DateField(null=True, blank=True)
+#     location = models.ForeignKey(Locations, null=True, db_column='location', blank=True)
+#     class Meta:
+#         db_table = 'users'
 
+
+# class PostManager(models.Manager):
 
 class Posts(models.Model):
-    ptid = models.IntegerField(primary_key=True)
+    ptid = models.AutoField(primary_key=True)
     content = models.CharField(max_length=2000L)
     time = models.DateField()
     location = models.ForeignKey(Locations, null=True, db_column='location', blank=True)
     user = models.ForeignKey(Users, null=True, db_column='user', blank=True)
     class Meta:
         db_table = 'posts'
-
+    # objects = PostManager()
+    def getDict(self):
+        tmp = {
+            'content': self.content,
+            'time': self.time.isoformat(),
+            }
+        # if not self.location is None:
+        #     tmp['location'] = self.location
+        return tmp
 
 class Restaurants(models.Model):
     rid = models.IntegerField(primary_key=True)
