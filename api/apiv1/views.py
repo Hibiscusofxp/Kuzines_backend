@@ -52,7 +52,7 @@ def getListFromGoogleMap(request):
             tmp["address"] = entry["vicinity"]
         if tmp:
             entries.append(tmp)
-    return SuccessRes(entries)
+    return SuccessRes(data = entries)
 
 
 
@@ -86,7 +86,7 @@ def sign_up(request):
     if request.DATA.has_key('lastname'):
         newUser.last_name = lastname
     newUser.save()
-    return SuccessRes("New user created")
+    return SuccessRes(message = "New user created")
 
 
 
@@ -106,7 +106,7 @@ def log_in(request):
     user = auth.authenticate(username = username, password = password)
     if user is not None and user.is_active:
         auth.login(request, user)
-        return SuccessRes("You are successfully logged in")
+        return SuccessRes(message = "You are successfully logged in")
     else:
         return FailResWithMsg("username and password dismatch")
 
@@ -115,7 +115,7 @@ def log_in(request):
 @kuzines_api
 def is_login(request):
     if request.user.is_authenticated():
-        return SuccessRes("You are currently logged in")
+        return SuccessRes(message = "You are currently logged in")
     else:
         return FailResWithMsg("You are not logged in")
 
@@ -127,7 +127,7 @@ from django.contrib.auth.decorators import login_required
 @kuzines_api
 def log_out(request):
     auth_logout(request)
-    return SuccessRes("You are successfully logged in")
+    return SuccessRes(message = "You are successfully logged in")
 
 
 from .models import Posts
@@ -162,7 +162,7 @@ def newpost(request):
     newPost = Posts(content = content, user = user)
     newPost.time = datetime.datetime.utcnow()
     newPost.save()
-    return SuccessRes("New feed posted on " + username)
+    return SuccessRes(message = "New feed posted on " + username)
 
 
 @require_POST
@@ -189,15 +189,16 @@ def getPosts(request):
     jdata = []
     for entry in allposts:
         jdata.append(entry.getDict())
-    return SuccessRes(jdata)
+    return SuccessRes(data = jdata)
 
 
 
 
 
-def SuccessRes(data):
+def SuccessRes(data = "", message = ""):
     res = RSuccess()
     res.data = data
+    res.message = message
     return HttpResponse(json.dumps(res), content_type = "application/json")
 
 def FailResWithMsg(message):
