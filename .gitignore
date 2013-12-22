@@ -2,3 +2,5 @@
 media
 media/*
 *.sqlite3
+*~
+.*.swp
