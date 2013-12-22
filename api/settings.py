@@ -20,7 +20,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         # 'NAME': 'new_fb_login_v2',                      # Or path to database file if using sqlite3.
-        'NAME': 'kuzines_db_v1',                      # Or path to database file if using sqlite3.
+        'NAME': 'kuzines_db_v2',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': 'root',
         'PASSWORD': 'xZ9pq3d7jJ7M4yFe',

@@ -1,9 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User as Users
+from django.contrib.auth.models import User
 # Create your models here.
 
 class Locations(models.Model):
-    lid = models.IntegerField(primary_key=True)
+    lid = models.AutoField(primary_key=True)
     address = models.CharField(max_length=200L, blank=True)
     city = models.CharField(max_length=50L, blank=True)
     state = models.CharField(max_length=50L, blank=True)
@@ -11,16 +11,17 @@ class Locations(models.Model):
     class Meta:
         db_table = 'locations'
 
-# class Users(models.Model):
-#     uid = models.IntegerField(primary_key=True)
+class MyUsers(models.Model):
+    uid = models.AutoField(primary_key=True)
 #     firstname = models.CharField(max_length=100L)
 #     lastname = models.CharField(max_length=100L, blank=True)
 #     username = models.CharField(max_length=100L, unique=True)
 #     password = models.CharField(max_length=256L)
-#     birthday = models.DateField(null=True, blank=True)
-#     location = models.ForeignKey(Locations, null=True, db_column='location', blank=True)
-#     class Meta:
-#         db_table = 'users'
+    birthday = models.DateField(null=True, blank=True)
+    location = models.ForeignKey(Locations, null=True, db_column='location', blank=True)
+    user = models.ForeignKey(User, null=True, db_column='user', blank=True)
+    class Meta:
+        db_table = 'myusers'
 
 
 # class PostManager(models.Manager):
@@ -28,9 +29,9 @@ class Locations(models.Model):
 class Posts(models.Model):
     ptid = models.AutoField(primary_key=True)
     content = models.CharField(max_length=2000L)
-    time = models.DateField()
+    time = models.DateTimeField()
     location = models.ForeignKey(Locations, null=True, db_column='location', blank=True)
-    user = models.ForeignKey(Users, null=True, db_column='user', blank=True)
+    user = models.ForeignKey(User, null=True, db_column='user', blank=True)
     class Meta:
         db_table = 'posts'
     # objects = PostManager()
@@ -44,7 +45,7 @@ class Posts(models.Model):
         return tmp
 
 class Restaurants(models.Model):
-    rid = models.IntegerField(primary_key=True)
+    rid = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200L)
     type = models.CharField(max_length=50L, blank=True)
     visits = models.IntegerField(null=True, blank=True)
@@ -54,7 +55,7 @@ class Restaurants(models.Model):
         db_table = 'restaurants'
 
 class Dishes(models.Model):
-    did = models.IntegerField(primary_key=True)
+    did = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200L)
     dscp = models.CharField(max_length=2000L, blank=True)
     restaurant = models.ForeignKey(Restaurants, null=True, db_column='restaurant', blank=True)
@@ -65,9 +66,9 @@ class Dishes(models.Model):
         db_table = 'dishes'
 
 class Photos(models.Model):
-    pid = models.IntegerField(primary_key=True)
+    pid = models.AutoField(primary_key=True)
     link = models.CharField(max_length=200L, unique=True, blank=True)
-    author = models.ForeignKey(Users, null=True, db_column='author', blank=True)
+    author = models.ForeignKey(User, null=True, db_column='author', blank=True)
     restaurant = models.ForeignKey(Restaurants, null=True, db_column='restaurant', blank=True)
     class Meta:
         db_table = 'photos'
@@ -76,25 +77,25 @@ class Photos(models.Model):
 # -- RELATIONS
 
 class Favrestaurants(models.Model):
-    uid = models.ForeignKey(Users, db_column='uid')
+    uid = models.ForeignKey(User, db_column='uid')
     rid = models.ForeignKey(Restaurants, db_column='rid')
     class Meta:
         db_table = 'favrestaurants'
 
 class Favdishes(models.Model):
-    uid = models.ForeignKey(Users, db_column='uid')
+    uid = models.ForeignKey(User, db_column='uid')
     did = models.ForeignKey(Dishes, db_column='did')
     class Meta:
         db_table = 'favdishes'
 
 class Checkins(models.Model):
-    uid = models.ForeignKey(Users, db_column='uid')
+    uid = models.ForeignKey(User, db_column='uid')
     rid = models.ForeignKey(Restaurants, db_column='rid')
     class Meta:
         db_table = 'checkins'
 
 class Usertags(models.Model):
-    uid = models.ForeignKey(Users, db_column='uid')
+    uid = models.ForeignKey(User, db_column='uid')
     pid = models.ForeignKey(Photos, db_column='pid')
     class Meta:
         db_table = 'usertags'
@@ -106,7 +107,7 @@ class Dishtags(models.Model):
         db_table = 'dishtags'
 
 class Reviews(models.Model):
-    uid = models.ForeignKey(Users, db_column='uid')
+    uid = models.ForeignKey(User, db_column='uid')
     did = models.ForeignKey(Dishes, db_column='did')
     level = models.IntegerField(null=True, blank=True)
     dscp = models.CharField(max_length=2000L, blank=True)
@@ -114,19 +115,19 @@ class Reviews(models.Model):
         db_table = 'reviews'
 
 class Likes(models.Model):
-    uid = models.ForeignKey(Users, db_column='uid')
+    uid = models.ForeignKey(User, db_column='uid')
     did = models.ForeignKey(Dishes, db_column='did')
     class Meta:
         db_table = 'likes'
 
 class Friends(models.Model):
-    user1 = models.ForeignKey(Users, related_name='friends1')
-    user2 = models.ForeignKey(Users, related_name='friends2')
+    user1 = models.ForeignKey(User, related_name='friends1')
+    user2 = models.ForeignKey(User, related_name='friends2')
     class Meta:
         db_table = 'friends'
 
 class Tries(models.Model):
-    uid = models.ForeignKey(Users, db_column='uid')
+    uid = models.ForeignKey(User, db_column='uid')
     did = models.ForeignKey(Dishes, db_column='did')
     class Meta:
         db_table = 'tries'
