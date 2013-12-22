@@ -16,7 +16,7 @@ def profile_file_name(instance, filename):
     return '/'.join(['profile_pic', instance.user.username, filename])
 
 class MyUserInfo(models.Model):
-    uid = models.AutoField(primary_key=True)
+    user = models.OneToOneField(User, primary_key = True)
 #     firstname = models.CharField(max_length=100L)
 #     lastname = models.CharField(max_length=100L, blank=True)
 #     username = models.CharField(max_length=100L, unique=True)
@@ -25,7 +25,6 @@ class MyUserInfo(models.Model):
     photo = models.FileField(upload_to = profile_file_name, null=True, blank=True)
     location = models.ForeignKey(Locations, null=True, db_column='location', blank=True)
     # user = models.ForeignKey(User, null=True, db_column='user', blank=True)
-    user = models.OneToOneField(User)
     class Meta:
         db_table = 'myusers'
 
@@ -137,3 +136,16 @@ class Tries(models.Model):
     did = models.ForeignKey(Dishes, db_column='did')
     class Meta:
         db_table = 'tries'
+
+
+#Modify User to add get_myuserinfo
+def user_get_myuserinfo(self):
+    try:
+        myuserinfo = self.myuserinfo
+    except MyUserInfo.DoesNotExist:
+        myuserinfo = MyUserInfo(user = self)
+        myuserinfo.save()
+        myuserinfo = self.myuserinfo
+    return myuserinfo
+
+User.get_myuserinfo = user_get_myuserinfo
