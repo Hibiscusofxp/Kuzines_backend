@@ -12,6 +12,9 @@ class Locations(models.Model):
         db_table = 'locations'
 
 
+def profile_file_name(instance, filename):
+    return '/'.join(['profile_pic', instance.user.username, filename])
+
 class MyUserInfo(models.Model):
     uid = models.AutoField(primary_key=True)
 #     firstname = models.CharField(max_length=100L)
@@ -19,7 +22,7 @@ class MyUserInfo(models.Model):
 #     username = models.CharField(max_length=100L, unique=True)
 #     password = models.CharField(max_length=256L)
     birthday = models.DateField(null=True, blank=True)
-    photo = models.FileField(upload_to = 'profile_pics/', null=True, blank=True)
+    photo = models.FileField(upload_to = profile_file_name, null=True, blank=True)
     location = models.ForeignKey(Locations, null=True, db_column='location', blank=True)
     # user = models.ForeignKey(User, null=True, db_column='user', blank=True)
     user = models.OneToOneField(User)
