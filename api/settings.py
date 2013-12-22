@@ -227,5 +227,6 @@ SOCIAL_AUTH_FACEBOOK_SECRET ='f1b4c38284384384657cc65c95b82d74'
 if isfile(join(ROOT_PATH, "settings_production.py")):
     PRODUCTION_SETTINGS = imp.load_source("settings_production", join(ROOT_PATH, "settings_production.py"))
     DATABASES = PRODUCTION_SETTINGS.DATABASES
+    MEDIA_ROOT = PRODUCTION_SETTINGS.MEDIA_ROOT
 
 MY_GOOGLE_API_KEY = 'AIzaSyB68eUZvmlXHPJ4zHBtCnqhAV87_z3CT30'
