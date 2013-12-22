@@ -210,7 +210,6 @@ def getPosts(request):
         jdata.append(entry.getDict())
     return SuccessRes(data = jdata)
 
-from .forms import ProfilePic
 
 @require_POST
 @login_required
@@ -223,9 +222,7 @@ def uploadFile(request):
         output_json
     """
     # not sure: assume all paras are valid
-    # form = ProfilePic(request.POST, request.FILES)
     user = request.user
-    # if form.is_valid():
     if request.FILES.has_key('file'):
         user.myuserinfo.photo = request.FILES['file']
         user.myuserinfo.save()
