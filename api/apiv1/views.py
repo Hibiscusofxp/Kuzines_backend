@@ -16,6 +16,15 @@ from django.views.decorators.http import require_POST
 @csrf_exempt
 @kuzines_api
 def getListFromGoogleMap(request):
+    """ required_paras
+    float latitude
+    float longitude
+        output_json
+    string name
+    string address
+    string icon
+    """
+    # problems
     # if request.method != 'POST':
     #     return FailResWithMsg("POST method expected")
     if request.DATA.has_key('latitude') and request.DATA.has_key('longitude'):
@@ -38,7 +47,6 @@ def getListFromGoogleMap(request):
     resurl = urllib2.urlopen(reque)
     resfile = resurl.read()
     resjson = json.loads(resfile)
-
     if not resjson['status'] == "OK" and not resjson['status'] == "ZERO_RESULTS":
         return ErrorRes(resjson['status'])
 
@@ -50,6 +58,8 @@ def getListFromGoogleMap(request):
             tmp["name"] = entry["name"]
         if entry.has_key("vicinity"):
             tmp["address"] = entry["vicinity"]
+        if entry.has_key("icon"):
+            tmp["icon"] = entry["icon"]
         if tmp:
             entries.append(tmp)
     return SuccessRes(data = entries)
@@ -115,7 +125,10 @@ def log_in(request):
 @kuzines_api
 def is_login(request):
     if request.user.is_authenticated():
-        return SuccessRes(message = "You are currently logged in")
+        data = {
+            'username': request.user.username,
+        }
+        return SuccessRes(data = data, message = "You are currently logged in")
     else:
         return FailResWithMsg("You are not logged in")
 
@@ -126,8 +139,8 @@ from django.contrib.auth.decorators import login_required
 @csrf_exempt
 @kuzines_api
 def log_out(request):
-    auth_logout(request)
-    return SuccessRes(message = "You are successfully logged in")
+    auth.logout(request)
+    return SuccessRes(message = "You have logged out")
 
 
 from .models import Posts
