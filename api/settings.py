@@ -35,7 +35,7 @@ SITE_ID = 1
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-MEDIA_ROOT = ''
+MEDIA_ROOT = 'D:/djangotest'
 MEDIA_URL = ''
 
 STATIC_ROOT = ''
@@ -219,7 +219,6 @@ try:
     from api.local_settings import *
 except ImportError:
     pass
-
     
 SOCIAL_AUTH_FACEBOOK_KEY ='587784734610029'
 SOCIAL_AUTH_FACEBOOK_SECRET ='f1b4c38284384384657cc65c95b82d74'

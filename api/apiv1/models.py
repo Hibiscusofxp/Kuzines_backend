@@ -11,15 +11,18 @@ class Locations(models.Model):
     class Meta:
         db_table = 'locations'
 
-class MyUsers(models.Model):
+
+class MyUserInfo(models.Model):
     uid = models.AutoField(primary_key=True)
 #     firstname = models.CharField(max_length=100L)
 #     lastname = models.CharField(max_length=100L, blank=True)
 #     username = models.CharField(max_length=100L, unique=True)
 #     password = models.CharField(max_length=256L)
     birthday = models.DateField(null=True, blank=True)
+    photo = models.FileField(upload_to = 'profile_pics/', null=True, blank=True)
     location = models.ForeignKey(Locations, null=True, db_column='location', blank=True)
-    user = models.ForeignKey(User, null=True, db_column='user', blank=True)
+    # user = models.ForeignKey(User, null=True, db_column='user', blank=True)
+    user = models.OneToOneField(User)
     class Meta:
         db_table = 'myusers'
 

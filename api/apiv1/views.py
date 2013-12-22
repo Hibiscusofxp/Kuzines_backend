@@ -11,8 +11,10 @@ import urllib, urllib2
 from .decorators import kuzines_api
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 
 @require_POST
+@login_required
 @csrf_exempt
 @kuzines_api
 def getListFromGoogleMap(request):
@@ -67,6 +69,7 @@ def getListFromGoogleMap(request):
 
 
 from django.contrib.auth.models import User
+from .models import MyUserInfo
 
 @require_POST
 @csrf_exempt
@@ -88,6 +91,7 @@ def sign_up(request):
     if User.objects.filter(username = username).exists():
         return FailResWithMsg("User already exists")
     newUser = User.objects.create_user(username = username, password = password)
+    newUserMy = MyUserInfo(user = newUser)
     # username is the primary key, serve as email
     if newUser is None:
         return ErrorRes("Error registering new user")
@@ -96,6 +100,7 @@ def sign_up(request):
     if request.DATA.has_key('lastname'):
         newUser.last_name = lastname
     newUser.save()
+    newUserMy.save()
     return SuccessRes(message = "New user created")
 
 
@@ -133,9 +138,8 @@ def is_login(request):
         return FailResWithMsg("You are not logged in")
 
 
-from django.contrib.auth.decorators import login_required
-@login_required
 @require_POST
+@login_required
 @csrf_exempt
 @kuzines_api
 def log_out(request):
@@ -147,6 +151,7 @@ from .models import Posts
 import datetime
 
 @require_POST
+@login_required
 @csrf_exempt
 @kuzines_api
 def newpost(request):
@@ -179,6 +184,7 @@ def newpost(request):
 
 
 @require_POST
+@login_required
 @csrf_exempt
 @kuzines_api
 def getPosts(request):
@@ -203,6 +209,29 @@ def getPosts(request):
     for entry in allposts:
         jdata.append(entry.getDict())
     return SuccessRes(data = jdata)
+
+from .forms import ProfilePic
+
+@require_POST
+@login_required
+@csrf_exempt
+@kuzines_api
+def uploadFile(request):
+    """ required_paras
+    FileField FILES['file']
+    request.user exists
+        output_json
+    """
+    # not sure: assume all paras are valid
+    # form = ProfilePic(request.POST, request.FILES)
+    user = request.user
+    # if form.is_valid():
+    if request.FILES.has_key('file'):
+        user.myuserinfo.photo = request.FILES['file']
+        user.myuserinfo.save()
+        return SuccessRes(message = "Upload success")
+    else:
+        return FailResWithMsg("Error retriving the file")
 
 
 
