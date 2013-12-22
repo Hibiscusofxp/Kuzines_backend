@@ -15,6 +15,32 @@ from django.views.decorators.http import require_POST
 @require_POST
 @csrf_exempt
 @kuzines_api
+#function for user checking in at a resteraunt 
+def checkIn(request):
+    #TODO: set the parameter: username, resterauntID
+    """ 
+    required_paras
+        uid
+        rid
+
+    """
+    if request.DATA.has_key('uid'):
+        username = request.DATA['uid']
+    else:
+        return FailResWithMsg("user not found")
+    if request.DATA.has_key('rid'):
+        resteraunt = request.DATA['rid']
+    else:
+        return FailResWithMsg("rid not found")
+    # location not done
+
+
+    #TODO: Verify uid & rid at here
+
+    newCheckIn = Checkins(uid = uid, rid = rid)
+    newCheckIn.save()
+    return SuccessRes(message = "New feed posted on " + username)
+
 def getListFromGoogleMap(request):
     """ required_paras
     float latitude
