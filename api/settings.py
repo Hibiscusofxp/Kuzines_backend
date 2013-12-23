@@ -23,7 +23,7 @@ DATABASES = {
         'NAME': 'kuzines_db_v2',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': 'root',
-        'PASSWORD': 'xZ9pq3d7jJ7M4yFe',
+        'PASSWORD': 'root',
         'HOST': '127.0.0.1',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '3306',                      # Set to empty string for default.
      }
@@ -35,7 +35,7 @@ SITE_ID = 1
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-MEDIA_ROOT = 'D:/djangotest'
+MEDIA_ROOT = '/Users/Ben/Documents/umich/kuzines/testimages'
 MEDIA_URL = ''
 
 STATIC_ROOT = ''
@@ -86,7 +86,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'social.apps.django_app.default',
+    # 'social.apps.django_app.default',
     'api.app',
     'api.apiv1',
 )

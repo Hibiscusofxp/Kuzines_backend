@@ -43,16 +43,20 @@ def checkIn(request):
     newCheckIn.save()
     return SuccessRes(message = "New feed posted on " + username)
 
+@require_POST
+# @login_required
+@csrf_exempt
+@kuzines_api
 def getListFromGoogleMap(request):
     """ required_paras
     float latitude
     float longitude
+    CAUTION: does not work if latitude and longitude are strings
         output_json
     string name
     string address
     string icon
     """
-    # problems
     # if request.method != 'POST':
     #     return FailResWithMsg("POST method expected")
     if request.DATA.has_key('latitude') and request.DATA.has_key('longitude'):
@@ -62,9 +66,9 @@ def getListFromGoogleMap(request):
         return FailResWithMsg("latitude or longitude not found")
 
     plain_paras = {
-        'location': latitude + ',' + longitude,
+        # 'location': latitude + ',' + longitude,
         # 'location': map(float, [latitude, longitude]).joins(','),
-        # 'location': "%d,%d" % (latitude, longitude),
+        'location': "%f,%f" % (latitude, longitude),
         'types': 'food',
         'radius': 500,
         'sensor': 'false',
