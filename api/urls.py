@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
+from api import settings
 
 from api.app import views
 
@@ -14,4 +15,5 @@ urlpatterns = patterns('',
     url(r'^api/v1/', include(api_urls)),
     url(r'^app/', include(app_urls)),
     url(r'', include('social.apps.django_app.urls', namespace='social')),
+    url(r'^images/(?P<path>.*)$','django.views.static.serve',{'document_root': settings.MEDIA_ROOT}),
 )

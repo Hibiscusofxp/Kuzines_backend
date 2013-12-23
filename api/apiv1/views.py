@@ -266,13 +266,15 @@ def uploadFile(request):
     FileField FILES['file']
     request.user exists
         output_json
+    file location is at MEDIA_ROOT + profile_file_name
+    file url is at MEDIA_URL + profile_file_name
     """
     # not sure: assume all paras are valid
     user = request.user
     if request.FILES.has_key('file'):
         user.myuserinfo.photo = request.FILES['file']
         user.myuserinfo.save()
-        return SuccessRes(message = "Upload success")
+        return SuccessRes(message = user.myuserinfo.photo.url)
     else:
         return FailResWithMsg("Error retriving the file")
 
