@@ -241,25 +241,6 @@ def getPosts(request):
     return SuccessRes(data = jdata)
 
 
-@require_POST
-@login_required
-@csrf_exempt
-@kuzines_api
-def uploadFile(request):
-    """ required_paras
-    FileField FILES['file']
-    request.user exists
-        output_json
-    """
-    # not sure: assume all paras are valid
-    user = request.user
-    if request.FILES.has_key('file'):
-        user.myuserinfo.photo = request.FILES['file']
-        user.myuserinfo.save()
-        return SuccessRes(message = "Upload success")
-    else:
-        return FailResWithMsg("Error retriving the file")
-
 
 @require_POST
 @login_required
