@@ -48,6 +48,7 @@ def checkIn(request):
 @csrf_exempt
 @kuzines_api
 def getListFromGoogleMap(request):
+    # todo: the result of photo field is using "&amp;" as seperator. need to change to "&"?
     """ required_paras
     float latitude
     float longitude
@@ -90,8 +91,19 @@ def getListFromGoogleMap(request):
             tmp["name"] = entry["name"]
         if entry.has_key("vicinity"):
             tmp["address"] = entry["vicinity"]
-        if entry.has_key("icon"):
-            tmp["icon"] = entry["icon"]
+        # if entry.has_key("icon"):
+        #     tmp["icon"] = entry["icon"]
+        if entry.has_key("photos"):
+            photo_paras = {
+                'photoreference': entry["photos"][0]["photo_reference"],
+                'maxwidth': 400,
+                'sensor': 'false',
+                'key': settings.MY_GOOGLE_API_KEY,
+            }
+            paras = urllib.urlencode(photo_paras)
+            tmp["photo"] = 'https://maps.googleapis.com/maps/api/place/photo?' + paras
+            # tmp["photo"].replace(r'&amp;', r'&')
+            # one alternative is to use javascripte and show it directly
         if tmp:
             entries.append(tmp)
     return SuccessRes(data = entries)
@@ -125,7 +137,7 @@ def sign_up(request):
     # username is the primary key, serve as email
     if newUser is None:
         return ErrorRes("Error registering new user")
-    
+    newUser.myuserinfo = newUserMy
     newUser.first_name = firstname
     if request.DATA.has_key('lastname'):
         newUser.last_name = lastname
@@ -222,7 +234,7 @@ def getPosts(request):
     required paras:
     string username
     """
-    # one problem remain: what content includes quotation marks
+    # one problem remain: what if content includes quotation marks
     # location not done
     if request.DATA.has_key('username'):
         username = request.DATA['username']
@@ -236,8 +248,51 @@ def getPosts(request):
 
     allposts = user.posts_set.all()
     jdata = []
+    count = 5
     for entry in allposts:
         jdata.append(entry.getDict())
+        count -= 1
+        if count == 0:
+            break
+    return SuccessRes(data = jdata)
+
+
+
+@require_POST
+@login_required
+@csrf_exempt
+@kuzines_api
+def getProfile(request):
+    """
+    required paras:
+    string username
+    """
+    # problem: picture cannot be encoded in json package
+    # friends_set not found
+    if request.DATA.has_key('username'):
+        username = request.DATA['username']
+    else:
+        return FailResWithMsg("username not found")
+
+    try:
+        user = User.objects.get(username = username)
+    except User.DoesNotExist:
+        return FailResWithMsg("User not exists")
+
+
+    allposts = user.posts_set.all()
+    jdata = [{
+        'username' : username,
+        # 'photo' : user.myuserinfo.photo,
+        # 'numOfFriends' : user.friends_set.count(),
+        'numOfFavRests' : user.favrestaurants_set.count(),
+        'numOfFavDishes' : user.favdishes_set.count(),
+        'numOfChickIn' : user.checkins_set.count(),
+        'numOfUsertags' : user.usertags_set.count(),
+        'numOfReviews' : user.reviews_set.count(),
+        'numOfLikes' : user.likes_set.count(),
+        'numOfTries' : user.tries_set.count(),
+    }]
     return SuccessRes(data = jdata)
 
 

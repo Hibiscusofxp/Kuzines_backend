@@ -10,5 +10,6 @@ urlpatterns = patterns('',
     url(r'^logout$', views.log_out, name = 'log_out'),
     url(r'^newpost$', views.newpost, name = 'newpost'),
     url(r'^getposts$', views.getPosts, name = 'getposts'),
+    url(r'^getprofile$', views.getProfile, name = 'getprofile'),
     url(r'^uploadfile$', views.uploadFile, name = 'uploadfile'),
 )
