@@ -1,5 +1,5 @@
 from django.shortcuts import render_to_response, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from django.conf import settings
 from django.contrib import auth
 
@@ -13,35 +13,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 
-@require_POST
-@login_required
-@csrf_exempt
-@kuzines_api
-#function for user checking in at a resteraunt 
-def checkIn(request):
-    #TODO: set the parameter: username, resterauntID
-    """ 
-    required_paras
-        uid
-        rid
-
-    """
-    if request.DATA.has_key('uid'):
-        username = request.DATA['uid']
-    else:
-        return FailResWithMsg("user not found")
-    if request.DATA.has_key('rid'):
-        resteraunt = request.DATA['rid']
-    else:
-        return FailResWithMsg("rid not found")
-    # location not done
 
 
-    #TODO: Verify uid & rid at here
 
-    newCheckIn = Checkins(uid = uid, rid = rid)
-    newCheckIn.save()
-    return SuccessRes(message = "New feed posted on " + username)
 
 @require_POST
 # @login_required
@@ -189,6 +163,8 @@ def log_out(request):
     return SuccessRes(message = "You have logged out")
 
 
+
+
 from .models import Posts
 import datetime
 
@@ -223,6 +199,8 @@ def newpost(request):
     newPost.time = datetime.datetime.utcnow()
     newPost.save()
     return SuccessRes(message = "New feed posted on " + username)
+
+
 
 
 @require_POST
@@ -283,7 +261,7 @@ def getProfile(request):
     allposts = user.posts_set.all()
     jdata = [{
         'username' : username,
-        # 'photo' : user.myuserinfo.photo,
+        'photo' : '/'.join([HttpRequest.get_host(request), user.myuserinfo.photo.url]),
         # 'numOfFriends' : user.friends_set.count(),
         'numOfFavRests' : user.favrestaurants_set.count(),
         'numOfFavDishes' : user.favdishes_set.count(),
@@ -306,17 +284,102 @@ def uploadFile(request):
     FileField FILES['file']
     request.user exists
         output_json
-    file location is at MEDIA_ROOT + profile_file_name
-    file url is at MEDIA_URL + profile_file_name
+    file location is at MEDIA_ROOT + profile_file_name (see in models)
+    file url is at MEDIA_URL(?) + urls + profile_file_name (see in urls.py)
     """
     # not sure: assume all paras are valid
     user = request.user
     if request.FILES.has_key('file'):
         user.myuserinfo.photo = request.FILES['file']
         user.myuserinfo.save()
-        return SuccessRes(message = user.myuserinfo.photo.url)
+        return SuccessRes(message = '/'.join([HttpRequest.get_host(request), user.myuserinfo.photo.url]) )
     else:
         return FailResWithMsg("Error retriving the file")
+
+
+
+
+from .models import Dishes
+
+@require_POST
+@login_required
+@csrf_exempt
+@kuzines_api
+#function for user checking in at a resteraunt 
+def getReviews(request):
+    #TODO: set the parameter: username, resterauntID
+    """ 
+    required_paras
+    string keyword
+    string mode = "my" or "all"
+    """
+    if request.DATA.has_key('keyword'):
+        keyword = request.DATA['keyword']
+    else:
+        return FailResWithMsg("Keyword not found")
+    if request.DATA.has_key('mode'):
+        mode = request.DATA['mode']
+    else:
+        return FailResWithMsg("Mode not found")
+    if mode == "my":
+        dishesset = request.user.reviews_set.filter(did__name__contains = keyword)
+    elif mode == "all":
+        dishesset = Dishes.objects.filter(name__contains = keyword)
+    else:
+        return FailResWithMsg("Mode not valid")
+
+    jdata = []
+    for entry in dishesset:
+        tmp = {}
+        tmp['dish_name'] = entry.name
+        tmp['resteraunt_name'] = entry.resteraunt.name
+        jdata.append(tmp)
+
+    return SuccessRes(data = jdata)
+
+
+
+
+
+from .models import Posts
+import datetime
+
+@require_POST
+@login_required
+@csrf_exempt
+@kuzines_api
+def newpost(request):
+    """
+    required paras:
+    string username
+    string content
+    *location location
+    """
+    # one problem remain: what content includes quotation marks
+    if request.DATA.has_key('username'):
+        username = request.DATA['username']
+    else:
+        return FailResWithMsg("username not found")
+    if request.DATA.has_key('content'):
+        content = request.DATA['content']
+    else:
+        return FailResWithMsg("content not found")
+    # location not done
+
+    try:
+        user = User.objects.get(username = username)
+    except User.DoesNotExist:
+        return FailResWithMsg("User not exists")
+
+    newPost = Posts(content = content, user = user)
+    newPost.time = datetime.datetime.utcnow()
+    newPost.save()
+    return SuccessRes(message = "New feed posted on " + username)
+
+
+
+
+
 
 
 

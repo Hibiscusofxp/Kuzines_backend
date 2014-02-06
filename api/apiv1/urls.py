@@ -12,4 +12,5 @@ urlpatterns = patterns('',
     url(r'^getposts$', views.getPosts, name = 'getposts'),
     url(r'^getprofile$', views.getProfile, name = 'getprofile'),
     url(r'^uploadfile$', views.uploadFile, name = 'uploadfile'),
+    url(r'^getreviews$', views.getReviews, name = 'getreviews'),
 )

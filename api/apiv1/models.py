@@ -13,7 +13,7 @@ class Locations(models.Model):
 
 
 def profile_file_name(instance, filename):
-    return '/'.join(['profile_pic', instance.user.username, filename])
+    return '/'.join(['images','profile_pic', instance.user.username, filename])
 
 class MyUserInfo(models.Model):
     user = models.OneToOneField(User, primary_key = True)
@@ -64,6 +64,7 @@ class Dishes(models.Model):
     name = models.CharField(max_length=200L)
     dscp = models.CharField(max_length=2000L, blank=True)
     restaurant = models.ForeignKey(Restaurants, null=True, db_column='restaurant', blank=True)
+    # restaurant should not be null?
     numtries = models.IntegerField(null=True, blank=True)
     numlikes = models.IntegerField(null=True, blank=True)
     numtopdish = models.IntegerField(null=True, blank=True)
