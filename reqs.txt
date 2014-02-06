@@ -3,3 +3,4 @@ django==1.6
 python-social-auth
 python-jsend
 mysql-python
+django-cors-headers==0.12
