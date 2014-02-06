@@ -65,6 +65,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -86,6 +87,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     # 'social.apps.django_app.default',
     'api.app',
     'api.apiv1',
@@ -230,3 +232,16 @@ if isfile(join(ROOT_PATH, "settings_production.py")):
     MEDIA_ROOT = PRODUCTION_SETTINGS.MEDIA_ROOT
 
 MY_GOOGLE_API_KEY = 'AIzaSyB68eUZvmlXHPJ4zHBtCnqhAV87_z3CT30'
+
+CORS_ORIGIN_ALLOW_ALL = False
+
+CORS_ORIGIN_WHITELIST = (
+    '173.255.234.214:8000',
+    '173.255.234.214',
+    '127.0.0.1:8000',
+    'localhost:8000',
+    'localhost',
+    '127.0.0.1',
+    'localhost:9000',
+    '127.0.0.1:9000',
+)

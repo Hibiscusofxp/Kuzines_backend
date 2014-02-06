@@ -35,8 +35,8 @@ def getListFromGoogleMap(request):
     # if request.method != 'POST':
     #     return FailResWithMsg("POST method expected")
     if request.DATA.has_key('latitude') and request.DATA.has_key('longitude'):
-        latitude = request.DATA['latitude']
-        longitude = request.DATA['longitude']
+        latitude = float(request.DATA['latitude'])
+        longitude = float(request.DATA['longitude'])
     else:
         return FailResWithMsg("latitude or longitude not found")
 
