@@ -53,6 +53,7 @@ class Restaurants(models.Model):
     rid = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200L)
     type = models.CharField(max_length=50L, blank=True)
+    # TODO: visits and favorited is not useful
     visits = models.IntegerField(null=True, blank=True)
     favorited = models.IntegerField(null=True, blank=True)
     location = models.ForeignKey(Locations, null=True, db_column='location', blank=True)

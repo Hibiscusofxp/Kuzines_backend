@@ -341,43 +341,33 @@ def getReviews(request):
 
 
 
-from .models import Posts
-import datetime
+from .models import Restaurants
 
 @require_POST
 @login_required
 @csrf_exempt
 @kuzines_api
-def newpost(request):
+def newRestaurant(request):
     """
     required paras:
-    string username
-    string content
+    string name
+    optional paras:
+    string type
     *location location
     """
+    #TODO: location not accomplished
     # one problem remain: what content includes quotation marks
-    if request.DATA.has_key('username'):
-        username = request.DATA['username']
+    if request.DATA.has_key('name'):
+        name = request.DATA['name']
     else:
-        return FailResWithMsg("username not found")
-    if request.DATA.has_key('content'):
-        content = request.DATA['content']
-    else:
-        return FailResWithMsg("content not found")
-    # location not done
+        return FailResWithMsg("name not found")
 
-    try:
-        user = User.objects.get(username = username)
-    except User.DoesNotExist:
-        return FailResWithMsg("User not exists")
-
-    newPost = Posts(content = content, user = user)
-    newPost.time = datetime.datetime.utcnow()
-    newPost.save()
-    return SuccessRes(message = "New feed posted on " + username)
-
-
-
+    newRest = Restaurants(name = name)
+    if request.DATA.has_key('type'):
+        newtype = request.DATA['type']
+        newRest.type = newtype
+    newRest.save()
+    return SuccessRes(message = "New resturant added")
 
 
 
