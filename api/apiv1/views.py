@@ -165,74 +165,8 @@ def log_out(request):
 
 
 
-from .models import Posts
-import datetime
-
-@require_POST
-@login_required
-@csrf_exempt
-@kuzines_api
-def newpost(request):
-    """
-    required paras:
-    string username
-    string content
-    *location location
-    """
-    # one problem remain: what content includes quotation marks
-    if request.DATA.has_key('username'):
-        username = request.DATA['username']
-    else:
-        return FailResWithMsg("username not found")
-    if request.DATA.has_key('content'):
-        content = request.DATA['content']
-    else:
-        return FailResWithMsg("content not found")
-    # location not done
-
-    try:
-        user = User.objects.get(username = username)
-    except User.DoesNotExist:
-        return FailResWithMsg("User not exists")
-
-    newPost = Posts(content = content, user = user)
-    newPost.time = datetime.datetime.utcnow()
-    newPost.save()
-    return SuccessRes(message = "New feed posted on " + username)
 
 
-
-
-@require_POST
-@login_required
-@csrf_exempt
-@kuzines_api
-def getPosts(request):
-    """
-    required paras:
-    string username
-    """
-    # one problem remain: what if content includes quotation marks
-    # location not done
-    if request.DATA.has_key('username'):
-        username = request.DATA['username']
-    else:
-        return FailResWithMsg("username not found")
-
-    try:
-        user = User.objects.get(username = username)
-    except User.DoesNotExist:
-        return FailResWithMsg("User not exists")
-
-    allposts = user.posts_set.all()
-    jdata = []
-    count = 5
-    for entry in allposts:
-        jdata.append(entry.getDict())
-        count -= 1
-        if count == 0:
-            break
-    return SuccessRes(data = jdata)
 
 
 
@@ -299,7 +233,123 @@ def uploadFile(request):
 
 
 
-from .models import Dishes
+################################### Post ###################################
+
+from .models import Posts
+import datetime
+
+@require_POST
+@login_required
+@csrf_exempt
+@kuzines_api
+def newpost(request):
+    """
+    required paras:
+    string username
+    string content
+    *location location
+    """
+    # one problem remain: what content includes quotation marks
+    if request.DATA.has_key('username'):
+        username = request.DATA['username']
+    else:
+        return FailResWithMsg("username not found")
+    if request.DATA.has_key('content'):
+        content = request.DATA['content']
+    else:
+        return FailResWithMsg("content not found")
+    # location not done
+
+    try:
+        user = User.objects.get(username = username)
+    except User.DoesNotExist:
+        return FailResWithMsg("User not exists")
+
+    newPost = Posts(content = content, user = user)
+    newPost.time = datetime.datetime.utcnow()
+    newPost.save()
+    return SuccessRes(message = "New feed posted on " + username)
+
+
+@require_POST
+@login_required
+@csrf_exempt
+@kuzines_api
+def getPosts(request):
+    """
+    required paras:
+    string username
+    """
+    # one problem remain: what if content includes quotation marks
+    # location not done
+    if request.DATA.has_key('username'):
+        username = request.DATA['username']
+    else:
+        return FailResWithMsg("username not found")
+
+    try:
+        user = User.objects.get(username = username)
+    except User.DoesNotExist:
+        return FailResWithMsg("User not exists")
+
+    allposts = user.posts_set.all()
+    jdata = []
+    count = 5
+    for entry in allposts:
+        jdata.append(entry.getDict())
+        count -= 1
+        if count == 0:
+            break
+    return SuccessRes(data = jdata)
+
+
+################################### Review ###################################
+
+from .models import Reviews
+
+@require_POST
+@login_required
+@csrf_exempt
+@kuzines_api
+def newReview(request):
+    """
+    required paras:
+    string username
+    string dishname
+    # assume dishname is unique here
+    string content
+    int level
+    Q: can use int?
+    """
+    # one problem remain: what content includes quotation marks
+    if request.DATA.has_key('username'):
+        username = request.DATA['username']
+    else:
+        return FailResWithMsg("username not found")
+    if request.DATA.has_key('dishname'):
+        dishname = request.DATA['dishname']
+    else:
+        return FailResWithMsg("dishname not found")
+    if request.DATA.has_key('dishname'):
+        content = request.DATA['content']
+    else:
+        return FailResWithMsg("content not found")
+    if request.DATA.has_key('level'):
+        level = request.DATA['level']
+    else:
+        return FailResWithMsg("level not found")
+
+    try:
+        user = User.objects.get(username = username)
+        dish = Dishes.objects.get(name = dishname)
+    except User.DoesNotExist:
+        return FailResWithMsg("User or dish not exists")
+
+    newReview = Reviews(uid = user, did = dish, level = level, dscp = content)
+    # newReview.time = datetime.datetime.utcnow()
+    newReview.save()
+    return SuccessRes(message = "New review posted on " + dishname + " by " + username)
+
 
 @require_POST
 @login_required
@@ -310,29 +360,36 @@ def getReviews(request):
     #TODO: set the parameter: username, resterauntID
     """ 
     required_paras
-    string keyword
-    string mode = "my" or "all"
+    string keyword (only in dish mode)
+    string mode = "user" or "dish"
     """
-    if request.DATA.has_key('keyword'):
-        keyword = request.DATA['keyword']
-    else:
-        return FailResWithMsg("Keyword not found")
     if request.DATA.has_key('mode'):
         mode = request.DATA['mode']
     else:
         return FailResWithMsg("Mode not found")
-    if mode == "my":
-        dishesset = request.user.reviews_set.filter(did__name__contains = keyword)
-    elif mode == "all":
-        dishesset = Dishes.objects.filter(name__contains = keyword)
+
+    if mode == "user":
+        reviewset = request.user.reviews_set.all()
+    elif mode == "dish":
+        if request.DATA.has_key('keyword'):
+            keyword = request.DATA['keyword']
+        else:
+            return FailResWithMsg("Keyword not found")
+
+        if keyword == "":
+            reviewset = Reviews.objects.all()
+        else:
+            reviewset = Reviews.objects.filter(did__name__contains = keyword)
     else:
         return FailResWithMsg("Mode not valid")
 
     jdata = []
-    for entry in dishesset:
+    for entry in reviewset:
         tmp = {}
-        tmp['dish_name'] = entry.name
-        tmp['resteraunt_name'] = entry.resteraunt.name
+        tmp['dishname'] = entry.did.name
+        tmp['username'] = entry.uid.username
+        tmp['level'] = entry.level
+        tmp['description'] = entry.dscp
         jdata.append(tmp)
 
     return SuccessRes(data = jdata)
@@ -340,6 +397,7 @@ def getReviews(request):
 
 
 
+################################### Restaurant ###################################
 
 from .models import Restaurants
 
@@ -369,7 +427,93 @@ def newRestaurant(request):
     newRest.save()
     return SuccessRes(message = "New resturant added")
 
+@require_POST
+@login_required
+@csrf_exempt
+@kuzines_api
+#function for user checking in at a resteraunt 
+def getRestaurants(request):
+    #TODO: set the parameter: username, resterauntID
+    """ 
+    required_paras
+    string keyword
+    """
+    if request.DATA.has_key('keyword'):
+        keyword = request.DATA['keyword']
+    else:
+        return FailResWithMsg("Keyword not found")
+    if keyword == "":
+        resset = Restaurants.objects.all()
+    else:
+        resset = Restaurants.objects.filter(name__contains = keyword)
 
+    jdata = []
+    for entry in resset:
+        tmp = {}
+        tmp['resterauntname'] = entry.name
+        jdata.append(tmp)
+
+    return SuccessRes(data = jdata)
+
+
+################################### Dish ###################################
+
+from .models import Dishes
+
+@require_POST
+@login_required
+@csrf_exempt
+@kuzines_api
+def newDish(request):
+    """
+    required paras:
+    string dishname
+    optional paras:
+    string description
+    """
+    # one problem remain: what content includes quotation marks
+    if request.DATA.has_key('dishname'):
+        dishname = request.DATA['dishname']
+    else:
+        return FailResWithMsg("username not found")
+    if request.DATA.has_key('description'):
+        dscp = request.DATA['description']
+    else:
+        dscp = ""
+
+    newDish = Dishes(name = dishname, dscp = dscp)
+    newDish.save()
+
+    return SuccessRes(message = "New dish added")
+
+@require_POST
+@login_required
+@csrf_exempt
+@kuzines_api
+#function for user checking in at a resteraunt 
+def getDishes(request):
+    #TODO: set the parameter: username, resterauntID
+    """ 
+    required_paras
+    string keyword
+    """
+    if request.DATA.has_key('keyword'):
+        keyword = request.DATA['keyword']
+    else:
+        return FailResWithMsg("Keyword not found")
+    if keyword == "":
+        resset = Dishes.objects.all()
+    else:
+        resset = Dishes.objects.filter(name__contains = keyword)
+
+    jdata = []
+    for entry in resset:
+        tmp = {}
+        tmp['dishname'] = entry.name
+        tmp['description'] = entry.dscp
+        jdata.append(tmp)
+
+    return SuccessRes(data = jdata)
 
 
 
